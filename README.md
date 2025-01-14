@@ -175,7 +175,7 @@ To publish the Docker image for multiple platforms, you can use the `docker buil
 
 ### Docker Usage
 #### Example using ACCESS_KEY_ID and SECRET_ACCESS_KEY
-```
+```json
 {
   "mcpServers": {
     "aws-resources": {
@@ -212,6 +212,25 @@ To publish the Docker image for multiple platforms, you can use the `docker buil
         "-v",
         "~/.aws:/root/.aws",
         "buryhuang/mcp-server-aws-resources:latest"
+      ]
+    }
+  }
+}
+```
+
+### Example running with git clone and profile
+```
+{
+  "mcpServers": {
+    "aws": {
+      "command": "/Users/gmr/.local/bin/uv",
+      "args": [
+        "--directory",
+        "/Users/gmr/Source/gmr/mcp-server-aws-resources-python",
+        "run",
+        "src/mcp_server_aws_resources/server.py",
+        "--profile",
+        "testing"
       ]
     }
   }
