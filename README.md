@@ -9,7 +9,7 @@ A Model Context Protocol (MCP) server implementation that provides integration w
 
 
 ## Why Another AWS MCP Server?
-I tried AWS Chatbot with Developer Access. Free Tier has 25 / month query of resources. Next tier is $29/month include 90% of the features I don't use. And the results are in a fashion of JSON and a lot of restrictions. 
+I tried AWS Chatbot with Developer Access. Free Tier has a limit of 25 query/month for resources. Next tier is $19/month include 90% of the features I don't use. And the results are in a fashion of JSON and a lot of restrictions. 
 
 I tried using [aws-mcp](https://github.com/RafalWilinski/aws-mcp) but ran into a few issues:
 
