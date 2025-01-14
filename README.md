@@ -4,7 +4,8 @@
 
 A Model Context Protocol (MCP) server implementation that provides integration with AWS resources through boto3. This server enables AI models to execute AWS queries through a standardized interface.
 
-<img width="1594" alt="image" src="https://github.com/user-attachments/assets/44748d67-41d6-49e5-bf2b-46881941ad76" />
+<img width="1619" alt="image" src="https://github.com/user-attachments/assets/2fe266ca-e641-4ab6-8407-630d221f1402" />
+
 
 
 ## Why Another AWS MCP Server?
