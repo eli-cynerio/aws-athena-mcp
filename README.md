@@ -174,4 +174,46 @@ To publish the Docker image for multiple platforms, you can use the `docker buil
 ## Usage with Claude Desktop
 
 ### Docker Usage
+#### Example using ACCESS_KEY_ID and SECRET_ACCESS_KEY
+```
+{
+  "mcpServers": {
+    "aws-resources": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "AWS_ACCESS_KEY_ID=your_access_key_id_here",
+        "-e",
+        "AWS_SECRET_ACCESS_KEY=your_secret_access_key_here",
+        "-e",
+        "AWS_DEFAULT_REGION=us-east-1",
+        "buryhuang/mcp-server-aws-resources:latest"
+      ]
+    }
+  }
+}
+```
+
+#### Example using PROFILE and mounting local AWS credentials
+```json
+{
+  "mcpServers": {
+    "aws-resources": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "AWS_PROFILE=default",
+        "-v",
+        "~/.aws:/root/.aws",
+        "buryhuang/mcp-server-aws-resources:latest"
+      ]
+    }
+  }
+}
 ```
