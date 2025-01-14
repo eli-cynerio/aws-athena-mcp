@@ -226,7 +226,7 @@ To publish the Docker image for multiple platforms, you can use the `docker buil
       "command": "/Users/gmr/.local/bin/uv",
       "args": [
         "--directory",
-        "/Users/gmr/Source/gmr/mcp-server-aws-resources-python",
+        "/<your-path>/mcp-server-aws-resources-python",
         "run",
         "src/mcp_server_aws_resources/server.py",
         "--profile",
