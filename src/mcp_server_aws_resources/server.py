@@ -1,3 +1,4 @@
+import argparse
 import logging
 import json
 from typing import Any, Dict, List, Optional
@@ -13,26 +14,52 @@ from operator import itemgetter
 
 logger = logging.getLogger('mcp_aws_resources_server')
 
+
+def parse_arguments() -> argparse.Namespace:
+    """Use argparse to allow values to be set as CLI switches
+    or environment variables
+
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--access-key-id', default=os.environ.get('AWS_ACCESS_KEY_ID')
+    )
+    parser.add_argument(
+        '--secret-access-key', default=os.environ.get('AWS_SECRET_ACCESS_KEY')
+    )
+    parser.add_argument(
+        '--session-token', default=os.environ.get('AWS_SESSION_TOKEN')
+    )
+    parser.add_argument(
+        '--profile', default=os.environ.get('AWS_PROFILE')
+    )
+    parser.add_argument(
+        '--region',
+        default=os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
+    )
+    return parser.parse_args()
+
+
 class CodeExecutor(ast.NodeTransformer):
     """Custom AST NodeTransformer to validate and transform the code"""
-    
+
     def __init__(self):
         self.has_result = False
         self.imported_modules = set()
-    
+
     def visit_Assign(self, node):
         """Track if 'result' variable is assigned"""
         for target in node.targets:
             if isinstance(target, ast.Name) and target.id == 'result':
                 self.has_result = True
         return node
-    
+
     def visit_Import(self, node):
         """Track imported modules"""
         for alias in node.names:
             self.imported_modules.add(alias.name)
         return node
-    
+
     def visit_ImportFrom(self, node):
         """Track imported modules"""
         self.imported_modules.add(node.module)
@@ -41,34 +68,37 @@ class CodeExecutor(ast.NodeTransformer):
 class AWSResourceQuerier:
     def __init__(self):
         """Initialize AWS session using environment variables"""
+        args = parse_arguments()
         self.session = boto3.Session(
-            aws_access_key_id=os.environ.get('AWS_ACCESS_KEY_ID'),
-            aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY'),
-            aws_session_token=os.environ.get('AWS_SESSION_TOKEN'),
-            region_name=os.environ.get('AWS_DEFAULT_REGION', 'us-east-1')
+            aws_access_key_id=args.access_key_id,
+            aws_secret_access_key=args.secret_access_key,
+            aws_session_token=args.session_token,
+            profile_name=args.profile,
+            region_name=args.region
         )
-        
-        if not os.environ.get('AWS_ACCESS_KEY_ID') or not os.environ.get('AWS_SECRET_ACCESS_KEY'):
+
+        if (not args.profile and
+                (not args.access_key_id or not args.secret_access_key)):
             logger.warning("AWS credentials not found in environment variables")
-    
+
     def execute_query(self, code_snippet: str) -> str:
         """
         Execute a boto3 code snippet and return the results
-        
+
         Args:
             code_snippet (str): Python code using boto3 to query AWS resources
-            
+
         Returns:
             str: JSON string containing the query results or error message
         """
         try:
             # Parse the code into an AST
             tree = ast.parse(code_snippet)
-            
+
             # Analyze the code
             executor = CodeExecutor()
             executor.visit(tree)
-            
+
             # Validate imports
             allowed_modules = {'boto3', 'operator', 'json', 'datetime', 'pytz'}
             unauthorized_imports = executor.imported_modules - allowed_modules
@@ -77,7 +107,7 @@ class AWSResourceQuerier:
                     "error": f"Unauthorized imports: {', '.join(unauthorized_imports)}. "
                             f"Only {', '.join(allowed_modules)} are allowed."
                 })
-            
+
             # Create execution namespace
             local_ns = {
                 'boto3': boto3,
@@ -87,26 +117,26 @@ class AWSResourceQuerier:
                 '__builtins__': {
                     name: getattr(__builtins__, name)
                     for name in [
-                        'dict', 'list', 'tuple', 'set', 'str', 'int', 'float', 'bool', 
+                        'dict', 'list', 'tuple', 'set', 'str', 'int', 'float', 'bool',
                         'len', 'max', 'min', 'sorted', 'filter', 'map', 'sum', 'any', 'all',
                         '__import__', 'hasattr', 'getattr', 'isinstance', 'print'
                     ]
                 }
             }
-            
+
             # Compile and execute the code
             compiled_code = compile(tree, '<string>', 'exec')
             exec(compiled_code, local_ns)
-            
+
             # Get the result
             result = local_ns.get('result')
-            
+
             # Validate result was set
             if not executor.has_result:
                 return json.dumps({
                     "error": "Code must set a 'result' variable with the query output"
                 })
-            
+
             # Convert result to JSON-serializable format
             if result is not None:
                 if hasattr(result, 'to_dict'):
@@ -114,7 +144,7 @@ class AWSResourceQuerier:
                 return json.dumps(result, default=str)
             else:
                 return json.dumps({"error": "Result cannot be None"})
-                
+
         except SyntaxError as e:
             logger.error(f"Syntax error in code: {str(e)}")
             return json.dumps({"error": f"Syntax error: {str(e)}"})
@@ -180,7 +210,7 @@ async def main():
             if name == "query_aws_resources":
                 if not arguments or "code_snippet" not in arguments:
                     raise ValueError("Missing code_snippet argument")
-                
+
                 results = aws_querier.execute_query(arguments["code_snippet"])
                 return [types.TextContent(type="text", text=str(results))]
             else:
@@ -206,4 +236,4 @@ async def main():
 
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(main()) 
+    asyncio.run(main())

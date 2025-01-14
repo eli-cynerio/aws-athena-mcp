@@ -9,7 +9,7 @@ A Model Context Protocol (MCP) server implementation that provides integration w
 
 
 ## Why Another AWS MCP Server?
-I tried AWS Chatbot with Developer Access. Free Tier has a limit of 25 query/month for resources. Next tier is $19/month include 90% of the features I don't use. And the results are in a fashion of JSON and a lot of restrictions. 
+I tried AWS Chatbot with Developer Access. Free Tier has a limit of 25 query/month for resources. Next tier is $19/month include 90% of the features I don't use. And the results are in a fashion of JSON and a lot of restrictions.
 
 I tried using [aws-mcp](https://github.com/RafalWilinski/aws-mcp) but ran into a few issues:
 
@@ -46,20 +46,20 @@ result = s3.list_buckets()
 ```python
 def get_latest_deployment(pipeline_name):
     codepipeline = session.client('codepipeline')
-    
+
     result = codepipeline.list_pipeline_executions(
         pipelineName=pipeline_name,
         maxResults=5
     )
-    
+
     if result['pipelineExecutionSummaries']:
         latest_execution = max(
-            [e for e in result['pipelineExecutionSummaries'] 
+            [e for e in result['pipelineExecutionSummaries']
              if e['status'] == 'Succeeded'],
             key=itemgetter('startTime'),
             default=None
         )
-        
+
         if latest_execution:
             result = codepipeline.get_pipeline_execution(
                 pipelineName=pipeline_name,
@@ -69,7 +69,7 @@ def get_latest_deployment(pipeline_name):
             result = None
     else:
         result = None
-    
+
     return result
 
 result = get_latest_deployment("your-pipeline-name")
@@ -111,6 +111,8 @@ The following environment variables are required:
 - `AWS_SESSION_TOKEN`: (Optional) AWS session token if using temporary credentials
 - `AWS_DEFAULT_REGION`: AWS region (defaults to 'us-east-1' if not set)
 
+You can also use a profile stored in the `~/.aws/credentials` file. To do this, set the `AWS_PROFILE` environment variable to the profile name.
+
 Note: Keep your AWS credentials secure and never commit them to version control.
 
 ### Docker Installation
@@ -138,6 +140,14 @@ docker run \
   -e AWS_ACCESS_KEY_ID=your_access_key_id_here \
   -e AWS_SECRET_ACCESS_KEY=your_secret_access_key_here \
   -e AWS_DEFAULT_REGION=your_AWS_DEFAULT_REGION \
+  buryhuang/mcp-server-aws-resources:latest
+```
+
+Or using stored credentials and a profile:
+```bash
+docker run \
+  -e AWS_PROFILE=[AWS_PROFILE_NAME] \
+  -v ~/.aws:/root/.aws \
   buryhuang/mcp-server-aws-resources:latest
 ```
 
