@@ -173,7 +173,7 @@ To publish the Docker image for multiple platforms, you can use the `docker buil
 
 ## Usage with Claude Desktop
 
-### Docker Usage
+### Running with Docker
 #### Example using ACCESS_KEY_ID and SECRET_ACCESS_KEY
 ```json
 {
@@ -218,7 +218,8 @@ To publish the Docker image for multiple platforms, you can use the `docker buil
 }
 ```
 
-### Example running with git clone and profile
+### Running with Git clone
+#### Example running with git clone and profile
 ```
 {
   "mcpServers": {
