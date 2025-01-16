@@ -2,7 +2,10 @@
 
 ## Overview
 
-A Model Context Protocol (MCP) server implementation that provides integration with AWS resources through boto3. This server enables AI models to execute AWS queries through a standardized interface.
+A Model Context Protocol (MCP) server implementation that provides running generated python code to query any AWS resources through boto3.
+
+**At your own risk**: 
+I didn't limit the operations to ReadyOnly, so that cautious Ops people can be helped using this tool doing management operations. Your AWS user role will dictate the permissions for what you can do.
 
 <img width="1619" alt="image" src="https://github.com/user-attachments/assets/2fe266ca-e641-4ab6-8407-630d221f1402" />
 
