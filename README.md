@@ -125,7 +125,7 @@ Note: Keep your AWS credentials secure and never commit them to version control.
 To install AWS Resources MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/mcp-server-aws-resources-python):
 
 ```bash
-npx @smithery/cli install mcp-server-aws-resources-python --client claude
+npx -y @smithery/cli install mcp-server-aws-resources-python --client claude
 ```
 
 ### Docker Installation
