@@ -1,5 +1,7 @@
 # AWS Resources MCP Server
 
+[![smithery badge](https://smithery.ai/badge/mcp-server-aws-resources-python)](https://smithery.ai/server/mcp-server-aws-resources-python)
+
 ## Overview
 
 A Model Context Protocol (MCP) server implementation that provides running generated python code to query any AWS resources through boto3.
@@ -117,6 +119,14 @@ The following environment variables are required:
 You can also use a profile stored in the `~/.aws/credentials` file. To do this, set the `AWS_PROFILE` environment variable to the profile name.
 
 Note: Keep your AWS credentials secure and never commit them to version control.
+
+### Installing via Smithery
+
+To install AWS Resources MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/mcp-server-aws-resources-python):
+
+```bash
+npx @smithery/cli install mcp-server-aws-resources-python --client claude
+```
 
 ### Docker Installation
 
