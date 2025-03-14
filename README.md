@@ -11,6 +11,11 @@ I didn't limit the operations to ReadyOnly, so that cautious Ops people can be h
 
 <img width="1619" alt="image" src="https://github.com/user-attachments/assets/2fe266ca-e641-4ab6-8407-630d221f1402" />
 
+**Demo: Fix Dynamodb Permission Error**
+
+https://github.com/user-attachments/assets/de88688d-d7a0-45e1-94eb-3f5d71e9a7c7
+
+
 
 
 ## Why Another AWS MCP Server?
