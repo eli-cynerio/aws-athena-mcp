@@ -1,7 +1,7 @@
 # AWS Resources MCP Server
 
-[![Docker Hub](https://img.shields.io/docker/v/buryhuang/mcp-server-aws-resources?label=Docker%20Hub)](https://hub.docker.com/r/buryhuang/mcp-server-aws-resources) [![smithery badge](https://smithery.ai/badge/mcp-server-aws-resources-python)](https://smithery.ai/server/mcp-server-aws-resources-python)
-
+[![Docker Hub](https://img.shields.io/docker/v/buryhuang/mcp-server-aws-resources?label=Docker%20Hub)](https://hub.docker.com/r/buryhuang/mcp-server-aws-resources)
+[![Docker Hub](https://img.shields.io/docker/pulls/buryhuang/mcp-server-aws-resources?label=Docker%20Hub)](https://hub.docker.com/r/buryhuang/mcp-server-aws-resources)
 ## Overview
 
 A Model Context Protocol (MCP) server implementation that provides running generated python code to query any AWS resources through boto3.
