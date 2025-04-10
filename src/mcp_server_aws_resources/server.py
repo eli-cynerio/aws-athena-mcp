@@ -160,40 +160,25 @@ async def main():
 
     @server.list_resources()
     async def handle_list_resources() -> list[types.Resource]:
-        return [
-            types.Resource(
-                uri=AnyUrl("aws://query_resources"),
-                name="AWS Resources Query",
-                description="Execute boto3 queries to fetch AWS resources",
-                mimeType="application/json",
-            )
-        ]
+        return []
 
     @server.read_resource()
     async def handle_read_resource(uri: AnyUrl) -> str:
-        if uri.scheme != "aws":
-            raise ValueError(f"Unsupported URI scheme: {uri.scheme}")
-
-        path = str(uri).replace("aws://", "")
-        if path == "query_resources":
-            # Return empty result as this endpoint requires a specific query
-            return json.dumps({"message": "Please use the query_aws_resources tool to execute specific queries"})
-        else:
-            raise ValueError(f"Unknown resource path: {path}")
+        return ""
 
     @server.list_tools()
     async def handle_list_tools() -> list[types.Tool]:
         """List available tools"""
         return [
             types.Tool(
-                name="query_aws_resources",
-                description="Execute a boto3 code snippet to query AWS resources",
+                name="aws_resources_query_or_modify",
+                description="Execute a boto3 code snippet to query or modify AWS resources",
                 inputSchema={
                     "type": "object",
                     "properties": {
                         "code_snippet": {
                             "type": "string",
-                            "description": "Python code using boto3 to query AWS resources. The code should have default execution setting variable named 'result'. Example code: 'result = boto3.client('s3').list_buckets()'"
+                            "description": "Python code using boto3 to query or modify AWS resources. The code should have default execution setting variable named 'result'. Example code: 'result = boto3.client('s3').list_buckets()'"
                         }
                     },
                     "required": ["code_snippet"]
@@ -207,7 +192,7 @@ async def main():
     ) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
         """Handle tool execution requests"""
         try:
-            if name == "query_aws_resources":
+            if name == "aws_resources_query_or_modify":
                 if not arguments or "code_snippet" not in arguments:
                     raise ValueError("Missing code_snippet argument")
 

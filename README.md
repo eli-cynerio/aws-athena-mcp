@@ -47,6 +47,8 @@ The server exposes the following resource:
 ### Example Queries
 
 Here are some example queries you can execute:
+
+1. List S3 buckets:
 ```python
 s3 = session.client('s3')
 result = s3.list_buckets()
@@ -85,12 +87,14 @@ def get_latest_deployment(pipeline_name):
 result = get_latest_deployment("your-pipeline-name")
 ```
 
+**Note**: All code snippets must set a `result` variable that will be returned to the client. The `result` variable will be automatically converted to JSON format, with proper handling of AWS-specific objects and datetime values.
+
 ### Tools
 
 The server offers a tool for executing AWS queries:
 
-* `query_aws_resources`
-  * Execute a boto3 code snippet to query AWS resources
+* `aws_resources_query_or_modify`
+  * Execute a boto3 code snippet to query or modify AWS resources
   * Input:
     * `code_snippet` (string): Python code using boto3 to query AWS resources
     * The code must set a `result` variable with the query output
@@ -100,11 +104,22 @@ The server offers a tool for executing AWS queries:
     * json
     * datetime
     * pytz
+    * dateutil
+    * re
+    * time
   * Available built-in functions:
     * Basic types: dict, list, tuple, set, str, int, float, bool
     * Operations: len, max, min, sorted, filter, map, sum, any, all
     * Object handling: hasattr, getattr, isinstance
     * Other: print, __import__
+
+### Implementation Details
+
+The server includes several safety features:
+- AST-based code analysis to validate imports and code structure
+- Restricted execution environment with limited built-in functions
+- JSON serialization of results with proper handling of AWS-specific objects
+- Proper error handling and reporting
 
 ## Setup
 
