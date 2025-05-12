@@ -115,16 +115,24 @@ docker run \
 
 Or using stored credentials and a profile:
 ```bash
+# If using the pulled image:
 docker run \
   -e AWS_PROFILE=your_profile_name \
   -v ~/.aws:/root/.aws \
   elicynerio/aws-athena-mcp:latest
+
+# If using the locally built image:
+docker run \
+  -e AWS_PROFILE=your_profile_name \
+  -v ~/.aws:/root/.aws \
+  aws-athena-mcp
 ```
 
 ## Usage with Claude
 
 ### Running with Docker
 
+#### Using direct AWS credentials:
 ```json
 {
   "mcpServers": {
@@ -144,6 +152,33 @@ docker run \
         "AWS_ATHENA_WORKGROUP=primary",
         "-e",
         "AWS_ATHENA_OUTPUT_LOCATION=s3://your-bucket/path/",
+        "elicynerio/aws-athena-mcp:latest"
+      ]
+    }
+  }
+}
+```
+
+#### Using AWS profile:
+```json
+{
+  "mcpServers": {
+    "aws": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "AWS_PROFILE=your_profile_name",
+        "-e",
+        "AWS_DEFAULT_REGION=us-east-1",
+        "-e",
+        "AWS_ATHENA_WORKGROUP=primary",
+        "-e",
+        "AWS_ATHENA_OUTPUT_LOCATION=s3://your-bucket/path/",
+        "-v",
+        "~/.aws:/root/.aws",
         "elicynerio/aws-athena-mcp:latest"
       ]
     }
