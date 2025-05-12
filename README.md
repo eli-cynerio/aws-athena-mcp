@@ -86,12 +86,12 @@ Note: Keep your AWS credentials secure and never commit them to version control.
 
 1. Build the Docker image:
 ```bash
-docker build -t your-dockerhub-username/aws-athena-mcp:latest .
+docker build -t elicynerio/aws-athena-mcp:latest .
 ```
 
 2. Push to Docker Hub:
 ```bash
-docker push your-dockerhub-username/aws-athena-mcp:latest
+docker push elicynerio/aws-athena-mcp:latest
 ```
 
 #### Option 2: Run Locally
@@ -103,7 +103,7 @@ docker run \
   -e AWS_DEFAULT_REGION=your_region \
   -e AWS_ATHENA_WORKGROUP=your_workgroup \
   -e AWS_ATHENA_OUTPUT_LOCATION=s3://your-bucket/path/ \
-  your-dockerhub-username/aws-athena-mcp:latest
+  elicynerio/aws-athena-mcp:latest
 ```
 
 Or using stored credentials and a profile:
@@ -111,7 +111,7 @@ Or using stored credentials and a profile:
 docker run \
   -e AWS_PROFILE=your_profile_name \
   -v ~/.aws:/root/.aws \
-  your-dockerhub-username/aws-athena-mcp:latest
+  elicynerio/aws-athena-mcp:latest
 ```
 
 ## Usage with Claude
