@@ -82,21 +82,19 @@ Note: Keep your AWS credentials secure and never commit them to version control.
 
 ### Docker Installation
 
-#### Option 1: Build and Push to Docker Hub
-
-1. Build the Docker image:
+#### Option 1: Pull from Docker Hub
 ```bash
-docker build -t elicynerio/aws-athena-mcp:latest .
+docker pull elicynerio/aws-athena-mcp:latest
 ```
 
-2. Push to Docker Hub:
+#### Option 2: Build Locally
 ```bash
-docker push elicynerio/aws-athena-mcp:latest
+docker build -t aws-athena-mcp .
 ```
 
-#### Option 2: Run Locally
-
+Run the container:
 ```bash
+# If using the pulled image:
 docker run \
   -e AWS_ACCESS_KEY_ID=your_access_key_id_here \
   -e AWS_SECRET_ACCESS_KEY=your_secret_access_key_here \
@@ -104,6 +102,15 @@ docker run \
   -e AWS_ATHENA_WORKGROUP=your_workgroup \
   -e AWS_ATHENA_OUTPUT_LOCATION=s3://your-bucket/path/ \
   elicynerio/aws-athena-mcp:latest
+
+# If using the locally built image:
+docker run \
+  -e AWS_ACCESS_KEY_ID=your_access_key_id_here \
+  -e AWS_SECRET_ACCESS_KEY=your_secret_access_key_here \
+  -e AWS_DEFAULT_REGION=your_region \
+  -e AWS_ATHENA_WORKGROUP=your_workgroup \
+  -e AWS_ATHENA_OUTPUT_LOCATION=s3://your-bucket/path/ \
+  aws-athena-mcp
 ```
 
 Or using stored credentials and a profile:
