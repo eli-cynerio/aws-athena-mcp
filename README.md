@@ -137,7 +137,7 @@ docker run \
         "AWS_ATHENA_WORKGROUP=primary",
         "-e",
         "AWS_ATHENA_OUTPUT_LOCATION=s3://your-bucket/path/",
-        "your-dockerhub-username/aws-athena-mcp:latest"
+        "elicynerio/aws-athena-mcp:latest"
       ]
     }
   }
