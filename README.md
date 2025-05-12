@@ -74,7 +74,7 @@ The following environment variables or command-line arguments are supported:
 - `AWS_SECRET_ACCESS_KEY` / `--secret-access-key`: Your AWS secret key
 - `AWS_SESSION_TOKEN` / `--session-token`: (Optional) AWS session token if using temporary credentials
 - `AWS_DEFAULT_REGION` / `--region`: AWS region (defaults to 'us-east-1' if not set)
-- `AWS_PROFILE` / `--profile`: AWS profile name to use from ~/.aws/credentials
+- `AWS_PROFILE` / `--profile`: AWS profile name to use from /Users/<your-user>/.aws/credentials
 - `AWS_ATHENA_WORKGROUP` / `--athena-workgroup`: Athena workgroup to use (defaults to 'primary')
 - `AWS_ATHENA_OUTPUT_LOCATION` / `--athena-output-location`: S3 location for query results
 
@@ -118,13 +118,13 @@ Or using stored credentials and a profile:
 # If using the pulled image:
 docker run \
   -e AWS_PROFILE=your_profile_name \
-  -v ~/.aws:/root/.aws \
+  -v /Users/<your-user>/.aws:/root/.aws \
   elicynerio/aws-athena-mcp:latest
 
 # If using the locally built image:
 docker run \
   -e AWS_PROFILE=your_profile_name \
-  -v ~/.aws:/root/.aws \
+  -v /Users/<your-user>/.aws:/root/.aws \
   aws-athena-mcp
 ```
 
@@ -178,7 +178,7 @@ docker run \
         "-e",
         "AWS_ATHENA_OUTPUT_LOCATION=s3://your-bucket/path/",
         "-v",
-        "~/.aws:/root/.aws",
+        "/Users/<your-user>/.aws:/root/.aws",
         "elicynerio/aws-athena-mcp:latest"
       ]
     }
