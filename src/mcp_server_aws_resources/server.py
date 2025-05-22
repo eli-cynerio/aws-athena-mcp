@@ -118,7 +118,8 @@ class AWSResourceQuerier:
             
             # Check if query starts with SELECT or SHOW or DESCRIBE
             if not (normalized_query.startswith('SELECT ') or 
-                   normalized_query.startswith('SHOW ') or 
+                   normalized_query.startswith('WITH ') or 
+                    normalized_query.startswith('SHOW ') or 
                    normalized_query.startswith('DESCRIBE ') or
                    normalized_query == 'SHOW DATABASES' or
                    normalized_query.startswith('EXPLAIN ')):
