@@ -14,5 +14,19 @@ dependencies = [
     "pytz"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "mock>=5.0.0"
+]
+
 [tool.hatch.build.targets.wheel]
-packages = ["src/mcp_server_aws_resources"] 
+packages = ["src/mcp_server_aws_resources"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "--verbose"
