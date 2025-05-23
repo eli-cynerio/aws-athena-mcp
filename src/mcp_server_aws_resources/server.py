@@ -74,25 +74,73 @@ class CodeExecutor(ast.NodeTransformer):
         return node
 
 class AWSResourceQuerier:
-    def __init__(self):
-        """Initialize AWS session using environment variables"""
-        args = parse_arguments()
+    def __init__(self, 
+                 access_key_id=None, 
+                 secret_access_key=None, 
+                 session_token=None, 
+                 profile=None, 
+                 region='us-east-1', 
+                 athena_workgroup='primary', 
+                 athena_output_location='s3://aws-athena-query-results-qa-ue1/query-results/'):
+        """Initialize AWS session using provided parameters"""
         self.session = boto3.Session(
-            aws_access_key_id=args.access_key_id,
-            aws_secret_access_key=args.secret_access_key,
-            aws_session_token=args.session_token,
-            profile_name=args.profile,
-            region_name=args.region
+            aws_access_key_id=access_key_id,
+            aws_secret_access_key=secret_access_key,
+            aws_session_token=session_token,
+            profile_name=profile,
+            region_name=region
         )
         
         # Store Athena configuration
-        self.athena_workgroup = args.athena_workgroup
-        self.athena_output_location = args.athena_output_location
+        self.athena_workgroup = athena_workgroup
+        self.athena_output_location = athena_output_location
 
-        if (not args.profile and
-                (not args.access_key_id or not args.secret_access_key)):
+        if (not profile and
+                (not access_key_id or not secret_access_key)):
             logger.warning("AWS credentials not found in environment variables")
             
+    def validate_query(self, query_string: str) -> dict:
+        """
+        Validate an Athena query for security restrictions
+        
+        Args:
+            query_string (str): The SQL query to validate
+            
+        Returns:
+            dict or None: Error dictionary if validation fails, None if validation passes
+        """
+        # Validate query is SELECT only
+        normalized_query = query_string.strip().upper()
+        
+        # Check if query starts with SELECT or SHOW or DESCRIBE
+        if not (normalized_query.startswith('SELECT ') or 
+               normalized_query.startswith('WITH ') or 
+               normalized_query.startswith('SHOW ') or 
+               normalized_query.startswith('DESCRIBE ') or
+               normalized_query == 'SHOW DATABASES' or
+               normalized_query.startswith('EXPLAIN ')):
+            return {
+                "error": "Security restriction: Only SELECT, SHOW, DESCRIBE, and EXPLAIN queries are allowed"
+            }
+            
+        # Additional security check for common SQL injection patterns
+        disallowed_keywords = [
+            'INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', 'CREATE', 
+            'TRUNCATE', 'MERGE', 'GRANT', 'REVOKE', 'VACUUM'
+        ]
+        
+        # Check for disallowed keywords in the query
+        for keyword in disallowed_keywords:
+            pattern = r'\b' + keyword + r'\b'
+            import re
+            if re.search(pattern, normalized_query):
+                return {
+                    "error": f"Security restriction: Query contains disallowed keyword: {keyword}"
+                }
+        
+        # If we get here, validation passed
+        return None
+        
     def execute_athena_query(self, query_string: str, workgroup: str = None, 
                             output_location: str = None,
                             wait_for_completion: bool = False) -> dict:
@@ -113,34 +161,10 @@ class AWSResourceQuerier:
             workgroup = workgroup or self.athena_workgroup
             output_location = output_location or self.athena_output_location
             
-            # Validate query is SELECT only
-            normalized_query = query_string.strip().upper()
-            
-            # Check if query starts with SELECT or SHOW or DESCRIBE
-            if not (normalized_query.startswith('SELECT ') or 
-                   normalized_query.startswith('WITH ') or 
-                   normalized_query.startswith('SHOW ') or 
-                   normalized_query.startswith('DESCRIBE ') or
-                   normalized_query == 'SHOW DATABASES' or
-                   normalized_query.startswith('EXPLAIN ')):
-                return {
-                    "error": "Security restriction: Only SELECT, SHOW, DESCRIBE, and EXPLAIN queries are allowed"
-                }
-                
-            # Additional security check for common SQL injection patterns
-            disallowed_keywords = [
-                'INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', 'CREATE', 
-                'TRUNCATE', 'MERGE', 'GRANT', 'REVOKE', 'VACUUM'
-            ]
-            
-            # Check for disallowed keywords in the query
-            for keyword in disallowed_keywords:
-                pattern = r'\b' + keyword + r'\b'
-                import re
-                if re.search(pattern, normalized_query):
-                    return {
-                        "error": f"Security restriction: Query contains disallowed keyword: {keyword}"
-                    }
+            # Validate the query
+            validation_error = self.validate_query(query_string)
+            if validation_error:
+                return validation_error
             
             # Create Athena client
             athena_client = self.session.client('athena')
@@ -345,7 +369,21 @@ class AWSResourceQuerier:
 async def main():
     """Run the AWS Resources MCP server."""
     logger.info("Server starting")
-    aws_querier = AWSResourceQuerier()
+    
+    # Parse command line arguments
+    args = parse_arguments()
+    
+    # Create AWSResourceQuerier with parsed arguments
+    aws_querier = AWSResourceQuerier(
+        access_key_id=args.access_key_id,
+        secret_access_key=args.secret_access_key,
+        session_token=args.session_token,
+        profile=args.profile,
+        region=args.region,
+        athena_workgroup=args.athena_workgroup,
+        athena_output_location=args.athena_output_location
+    )
+    
     server = Server("aws-resources-manager")
 
     @server.list_resources()
